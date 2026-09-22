@@ -1,0 +1,83 @@
+{
+  "id": "2025-bowman",
+  "brand": "Bowman",
+  "year": 2025,
+  "name": "Bowman",
+  "subsets": [
+    {
+      "id": "base",
+      "name": "Veterans",
+      "prefix": "",
+      "from": 1,
+      "to": 150
+    },
+    {
+      "id": "prospects",
+      "name": "Prospects",
+      "prefix": "BP",
+      "from": 1,
+      "to": 150
+    }
+  ],
+  "parallels": [
+    {
+      "id": "base",
+      "name": "Base",
+      "print": null
+    },
+    {
+      "id": "refractor",
+      "name": "Refractor",
+      "print": null
+    },
+    {
+      "id": "sky-blue",
+      "name": "Sky Blue Refractor",
+      "print": null
+    },
+    {
+      "id": "purple",
+      "name": "Purple Refractor",
+      "print": null
+    },
+    {
+      "id": "aqua",
+      "name": "Aqua Refractor",
+      "print": 125
+    },
+    {
+      "id": "green",
+      "name": "Green Refractor",
+      "print": 99
+    },
+    {
+      "id": "yellow",
+      "name": "Yellow Refractor",
+      "print": 75
+    },
+    {
+      "id": "orange",
+      "name": "Orange Refractor",
+      "print": 25
+    },
+    {
+      "id": "red",
+      "name": "Red Refractor",
+      "print": 5
+    },
+    {
+      "id": "superfractor",
+      "name": "Superfractor",
+      "print": 1
+    },
+    {
+      "id": "printing-plate",
+      "name": "Printing Plate",
+      "print": 1
+    }
+  ],
+  "sport": "baseball",
+  "cards": {},
+  "verified": false,
+  "source": ""
+}

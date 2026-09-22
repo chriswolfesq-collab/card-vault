@@ -1,0 +1,81 @@
+{
+  "id": "2024-topps-series-1",
+  "brand": "Topps",
+  "year": 2024,
+  "name": "Series 1",
+  "subsets": [
+    {
+      "id": "base",
+      "name": "Base",
+      "prefix": "",
+      "from": 1,
+      "to": 350
+    }
+  ],
+  "parallels": [
+    {
+      "id": "base",
+      "name": "Base",
+      "print": null
+    },
+    {
+      "id": "rainbow-foil",
+      "name": "Rainbow Foil",
+      "print": null
+    },
+    {
+      "id": "gold-foil",
+      "name": "Gold Foil",
+      "print": null
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "print": 2024
+    },
+    {
+      "id": "vintage-stock",
+      "name": "Vintage Stock",
+      "print": 99
+    },
+    {
+      "id": "independence-day",
+      "name": "Independence Day",
+      "print": 76
+    },
+    {
+      "id": "black",
+      "name": "Black",
+      "print": 71
+    },
+    {
+      "id": "fathers-day",
+      "name": "Father's Day Powder Blue",
+      "print": 50
+    },
+    {
+      "id": "mothers-day",
+      "name": "Mother's Day Hot Pink",
+      "print": 50
+    },
+    {
+      "id": "memorial-day",
+      "name": "Memorial Day Camo",
+      "print": 25
+    },
+    {
+      "id": "platinum",
+      "name": "Platinum",
+      "print": 1
+    },
+    {
+      "id": "printing-plate",
+      "name": "Printing Plate",
+      "print": 1
+    }
+  ],
+  "sport": "baseball",
+  "cards": {},
+  "verified": false,
+  "source": ""
+}
