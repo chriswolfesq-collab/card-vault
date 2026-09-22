@@ -8,6 +8,7 @@
 import { writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildManifest } from './build-manifest.mjs';
 
 const SETS = join(fileURLToPath(new URL('..', import.meta.url)), 'data', 'sets');
 
@@ -99,3 +100,5 @@ for (const set of sets) {
   const total = set.subsets.reduce((n, s) => n + (s.to - s.from + 1), 0);
   console.log(`${set.id.padEnd(24)} ${String(total).padStart(4)} cards  ${set.parallels.length} parallels`);
 }
+
+await buildManifest(true);

@@ -14,6 +14,7 @@ import { readFile, writeFile, readdir, unlink, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildManifest } from './build-manifest.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DATA = join(ROOT, 'data');
@@ -54,6 +55,7 @@ if (clearing) {
       if (f.startsWith('demo-')) { await unlink(join(SETS, f)); files++; }
     }
   }
+  await buildManifest(true);
   const after = c.holdings.length + c.purchases.length + c.wants.length;
   console.log(`removed ${before - after} demo rows and ${files} demo set file(s)`);
   console.log(`${after} of your own rows left untouched`);
@@ -281,3 +283,5 @@ console.log(`  ${holdings.length} cards  worth about $${value.toFixed(0)}`);
 console.log(`  ${purchases.length} purchases totalling $${spend.toFixed(2)}`);
 console.log(`  ${wants.length} want-list entries`);
 console.log(`\nremove it all with:  node tools/demo-data.mjs --clear`);
+
+await buildManifest(true);

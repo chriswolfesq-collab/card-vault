@@ -17,6 +17,33 @@ export const store = {
   updated: null,
   status: 'loading', // loading | saved | saving | dirty | error
   error: null,
+  // 'server' -- talking to tools/serve.mjs, writes land in real files.
+  // 'static' -- no server (GitHub Pages, or index.html opened directly):
+  //             the JSON files are read-only, so edits live in this browser.
+  mode: 'server',
+};
+
+// Relative, so the app works from a subpath like /card-vault/ as well as from
+// the server's root.
+const API = 'api/';
+const LOCAL = { collection: 'cv-collection', cards: 'cv-setcards', sets: 'cv-sets' };
+
+const readLocal = (key, fallback = null) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const writeLocal = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 const listeners = new Set();
@@ -32,23 +59,75 @@ function setStatus(status, error = null) {
   emit();
 }
 
+const sortSets = (sets) =>
+  sets.sort((a, b) => b.year - a.year || a.brand.localeCompare(b.brand) || a.name.localeCompare(b.name));
+
 export async function load() {
   try {
-    const res = await fetch('/api/state');
+    const res = await fetch(`${API}state`);
     if (!res.ok) throw new Error(`server returned ${res.status}`);
     const { sets, collection } = await res.json();
-    store.sets = (sets || []).sort(
-      (a, b) => b.year - a.year || a.brand.localeCompare(b.brand) || a.name.localeCompare(b.name)
-    );
+    store.mode = 'server';
+    store.sets = sortSets(sets || []);
     store.holdings = collection?.holdings || [];
     store.purchases = collection?.purchases || [];
     store.wants = collection?.wants || [];
     store.updated = collection?.updated || null;
     setStatus('saved');
+    return store;
+  } catch {
+    // No server. Fall back to reading the JSON files directly.
+  }
+
+  try {
+    await loadStatic();
   } catch (err) {
-    setStatus('error', `Could not reach the Card Vault server. Start it with: node tools/serve.mjs  (${err.message})`);
+    setStatus('error', `Could not load the collection files. Run it locally with: node tools/serve.mjs  (${err.message})`);
   }
   return store;
+}
+
+/**
+ * Static mode: read the committed JSON straight off the host.
+ *
+ * There is no directory listing without a server, hence data/index.json. Any
+ * edits made here are layered on top from localStorage -- they cannot reach the
+ * files, and the UI says so rather than letting someone type a real collection
+ * into a page that will lose it.
+ */
+async function loadStatic() {
+  const grab = async (path) => {
+    const res = await fetch(path);
+    if (!res.ok) throw new Error(`${path} -> ${res.status}`);
+    return res.json();
+  };
+
+  const manifest = await grab('data/index.json');
+  const files = await Promise.all(
+    (manifest.sets || []).map((id) => grab(`data/sets/${id}.json`).catch(() => null))
+  );
+  const sets = files.filter(Boolean);
+
+  // Sets you created in this browser, and checklist names you filled in here.
+  for (const extra of readLocal(LOCAL.sets, [])) {
+    if (!sets.find((s) => s.id === extra.id)) sets.push(extra);
+  }
+  const nameOverlay = readLocal(LOCAL.cards, {});
+  for (const set of sets) {
+    const mine = nameOverlay[set.id];
+    if (mine) set.cards = { ...set.cards, ...mine };
+  }
+
+  const base = await grab('data/collection.json').catch(() => ({}));
+  const local = readLocal(LOCAL.collection);
+
+  store.mode = 'static';
+  store.sets = sortSets(sets);
+  store.holdings = local?.holdings ?? base.holdings ?? [];
+  store.purchases = local?.purchases ?? base.purchases ?? [];
+  store.wants = local?.wants ?? base.wants ?? [];
+  store.updated = local?.updated ?? base.updated ?? null;
+  setStatus('saved');
 }
 
 let timer = null;
@@ -61,10 +140,27 @@ const clean = (list) => list.map(({ _stamp, ...rest }) => rest);
 
 function flush() {
   pending = false;
+
+  if (store.mode === 'static') {
+    const ok = writeLocal(LOCAL.collection, {
+      holdings: clean(store.holdings),
+      purchases: store.purchases,
+      wants: store.wants,
+      updated: new Date().toISOString(),
+    });
+    if (ok) {
+      store.updated = new Date().toISOString();
+      setStatus('saved');
+    } else {
+      setStatus('error', 'This browser refused to store the change (private window, or storage full).');
+    }
+    return Promise.resolve();
+  }
+
   setStatus('saving');
   inFlight = inFlight
     .then(() =>
-      fetch('/api/collection', {
+      fetch(`${API}collection`, {
         method: 'PUT',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
@@ -263,8 +359,20 @@ export async function nameCard(setId, number, player, team = '') {
   if (!set || !player) return;
   const existing = set.cards[String(number)];
   if (existing && existing.player === player && (!team || existing.team === team)) return;
-  set.cards[String(number)] = { player, team: team || existing?.team || '' };
-  await fetch(`/api/sets/${set.id}`, {
+  const card = { player, team: team || existing?.team || '' };
+  set.cards[String(number)] = card;
+
+  if (store.mode === 'static') {
+    // The set file is read-only here, so the name is kept as a per-browser
+    // overlay and merged back over the file on the next load.
+    const overlay = readLocal(LOCAL.cards, {});
+    overlay[set.id] = { ...(overlay[set.id] || {}), [String(number)]: card };
+    writeLocal(LOCAL.cards, overlay);
+    emit();
+    return;
+  }
+
+  await fetch(`${API}sets/${set.id}`, {
     method: 'PUT',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(set),
@@ -273,12 +381,18 @@ export async function nameCard(setId, number, player, team = '') {
 }
 
 export async function saveSet(set) {
-  const res = await fetch(`/api/sets/${set.id}`, {
-    method: 'PUT',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(set),
-  });
-  if (!res.ok) throw new Error('could not save set');
+  if (store.mode === 'static') {
+    const mine = readLocal(LOCAL.sets, []).filter((s) => s.id !== set.id);
+    mine.push(set);
+    if (!writeLocal(LOCAL.sets, mine)) throw new Error('this browser refused to store the set');
+  } else {
+    const res = await fetch(`${API}sets/${set.id}`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(set),
+    });
+    if (!res.ok) throw new Error('could not save set');
+  }
   if (!store.sets.find((s) => s.id === set.id)) store.sets.push(set);
   store.sets.sort((a, b) => b.year - a.year || a.brand.localeCompare(b.brand) || a.name.localeCompare(b.name));
   emit();
@@ -288,9 +402,15 @@ export async function saveSet(set) {
 /* ---------------------------------------------------------------- photos */
 
 export async function uploadPhoto(holdingId, side, file) {
+  if (store.mode === 'static') {
+    // Photos are files on disk. Stuffing them into localStorage as data URLs
+    // would blow the quota after a handful of cards and lose them all at once,
+    // which is worse than saying no.
+    throw new Error('photos need the local server (node tools/serve.mjs)');
+  }
   const ext = (file.name?.match(/\.(jpe?g|png|webp)$/i) || ['.jpg'])[0].toLowerCase();
   const name = `${holdingId}-${side}${ext}`;
-  const res = await fetch(`/api/photo?name=${encodeURIComponent(name)}`, {
+  const res = await fetch(`${API}photo?name=${encodeURIComponent(name)}`, {
     method: 'POST',
     headers: { 'content-type': file.type || 'application/octet-stream' },
     body: file,
@@ -301,8 +421,9 @@ export async function uploadPhoto(holdingId, side, file) {
 }
 
 export async function deletePhoto(path) {
+  if (store.mode === 'static') return;
   const name = String(path).split('/').pop().split('?')[0];
-  await fetch(`/api/photo?name=${encodeURIComponent(name)}`, { method: 'DELETE' });
+  await fetch(`${API}photo?name=${encodeURIComponent(name)}`, { method: 'DELETE' });
 }
 
 /* ------------------------------------------------------------ export/import */
@@ -339,4 +460,11 @@ export function importJSON(text) {
   save();
   emit();
   return { added, skipped };
+}
+
+/** Drop every change made in this browser and go back to the published files. */
+export function resetLocal() {
+  for (const key of Object.values(LOCAL)) {
+    try { localStorage.removeItem(key); } catch { /* nothing to clear */ }
+  }
 }

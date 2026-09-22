@@ -1,4 +1,4 @@
-// Shoebox local server.
+// Card Vault local server.
 //
 // A static site cannot write to disk, and a collection that lives in localStorage
 // is one cleared cache away from gone. So the site is served by this instead: it
@@ -14,6 +14,7 @@ import { readFile, writeFile, readdir, mkdir, unlink, rename } from 'node:fs/pro
 import { existsSync } from 'node:fs';
 import { join, extname, normalize, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { buildManifest } from './build-manifest.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const DATA = join(ROOT, 'data');
@@ -137,10 +138,14 @@ async function handleAPI(req, res, url) {
       body.id = id;
       await mkdir(SETS, { recursive: true });
       await writeAtomic(path, JSON.stringify(body, null, 2) + '\n');
+      // Keep the static manifest in step, so a Pages deploy never ships a
+      // set list that disagrees with the set files next to it.
+      await buildManifest(true);
       return json(res, 200, { ok: true, id });
     }
     if (req.method === 'DELETE') {
       if (existsSync(path)) await unlink(path);
+      await buildManifest(true);
       return json(res, 200, { ok: true, id });
     }
   }
@@ -191,7 +196,7 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Shoebox -> http://localhost:${PORT}`);
+  console.log(`Card Vault -> http://localhost:${PORT}`);
   console.log(`  collection: ${join(DATA, 'collection.json')}`);
   console.log(`  photos:     ${PHOTOS}`);
 });

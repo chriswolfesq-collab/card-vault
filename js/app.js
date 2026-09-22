@@ -122,24 +122,40 @@ function render() {
   if (S.status === 'error' && !S.holdings.length) {
     html = `<div class="banner">${h(S.error)}</div>`;
   } else {
+    // Static mode has to announce itself. The whole premise of this app is that
+    // your collection lives in files you can trust; a page that quietly accepts
+    // edits it can never persist would be the exact failure it was built to avoid.
+    if (S.mode === 'static') html += staticBanner();
     switch (ui.view) {
-      case 'dashboard': html = dashboardView(S, ui); break;
-      case 'collection': html = collectionView(S, ui, apply(S.holdings, ui, getSet)); break;
-      case 'detail': html = detailView(S, ui); break;
-      case 'sets': html = setsView(S, { ...ui, openSet: '' }); break;
-      case 'setDetail': html = setsView(S, ui); break;
-      case 'players': html = playersView(S, ui); break;
-      case 'wants': html = wantsView(S, ui); break;
-      case 'purchases': html = purchasesView(S, ui); break;
-      case 'stats': html = statsView(S, ui); break;
-      case 'settings': html = settingsView(S, ui); break;
-      default: html = dashboardView(S, ui);
+      case 'dashboard': html += dashboardView(S, ui); break;
+      case 'collection': html += collectionView(S, ui, apply(S.holdings, ui, getSet)); break;
+      case 'detail': html += detailView(S, ui); break;
+      case 'sets': html += setsView(S, { ...ui, openSet: '' }); break;
+      case 'setDetail': html += setsView(S, ui); break;
+      case 'players': html += playersView(S, ui); break;
+      case 'wants': html += wantsView(S, ui); break;
+      case 'purchases': html += purchasesView(S, ui); break;
+      case 'stats': html += statsView(S, ui); break;
+      case 'settings': html += settingsView(S, ui); break;
+      default: html += dashboardView(S, ui);
     }
   }
 
   view.innerHTML = html + datalist();
   view.style.position = 'relative';
   attachTooltips(view);
+}
+
+function staticBanner() {
+  return `<div class="note note-warn">
+    <b>Demo mode — no server.</b>
+    You're reading the collection files as published. Anything you add or change is kept
+    in this browser only: it won't reach the files, won't follow you to another device,
+    and disappears if you clear site data. Photos are off entirely.
+    <br>For a collection you can rely on, clone the repo and run
+    <code>node tools/serve.mjs</code> — then every edit is written to real files you can commit.
+    <button class="btn btn-sm" data-act="reset-local" style="margin-left:8px">Discard my changes</button>
+  </div>`;
 }
 
 /** Player names already on file, for the editor's autocomplete. */
@@ -343,6 +359,7 @@ form.addEventListener('change', async (e) => {
   if (e.target.id !== 'photo-input') return;
   await usePhoto(photoSide, e.target.files[0]);
   e.target.value = '';
+  photoSide = null;
 });
 
 // Dropping a file on a slot, and pasting anywhere in the dialog. A card photo
@@ -520,6 +537,12 @@ async function runAction(act, target) {
       store.removeWant(w.id);
       break;
     }
+    case 'reset-local':
+      if (confirm('Discard every change made in this browser and reload the published collection?')) {
+        store.resetLocal();
+        location.reload();
+      }
+      break;
     case 'toggle-fav': ui.favorite = !ui.favorite; ui.page = 1; render(); break;
     case 'clear-filters':
       Object.assign(ui, { query: '', year: '', brand: '', team: '', player: '', cardType: '',

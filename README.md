@@ -88,6 +88,29 @@ Writes are atomic (temp file, then rename), so an interrupted save leaves the
 previous collection intact rather than a truncated one. Settings also does JSON
 export/import for moving the collection somewhere else.
 
+## Two modes
+
+| | with `node tools/serve.mjs` | static hosting (GitHub Pages, or opening `index.html`) |
+|---|---|---|
+| Reads | the JSON files | the same JSON files, via `data/index.json` |
+| Writes | real files on disk | this browser's `localStorage` only |
+| Photos | yes | no |
+
+The app tries the API first and falls back on its own, so the same build works
+both ways. Static hosting has no directory listing, hence `data/index.json` —
+the server rewrites it whenever a set changes, so it can't drift.
+
+**Static mode says so, loudly.** The premise here is that your collection lives
+in files you can trust; a page that quietly accepted edits it could never
+persist would be the exact failure this was built to avoid. So the demo carries
+a banner, photos are refused outright rather than stuffed into `localStorage` as
+data URLs that would blow the quota and vanish together, and there's a button to
+discard browser changes and go back to the published files.
+
+A live read-only demo is at
+**[chriswolfesq-collab.github.io/card-vault](https://chriswolfesq-collab.github.io/card-vault/)**.
+Poke at it all you like — nothing you do there reaches anyone else's copy.
+
 ## Values
 
 Values are whatever you type in. Nothing here fetches live comps — there is no
