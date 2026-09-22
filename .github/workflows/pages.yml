@@ -1,0 +1,53 @@
+# Publish the repo as-is to GitHub Pages.
+#
+# There is no build step: the app is plain HTML, CSS and ES modules, and the
+# data it reads is the committed JSON. This exists because the legacy Jekyll
+# builder reported "Page build failed" on a site with no Jekyll in it -- an
+# explicit upload of the directory is both honest about what is happening and
+# something that fails loudly when it fails.
+
+name: Deploy to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it half-published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the set manifest matches the set files
+        # data/index.json is what the app reads instead of a directory listing.
+        # If it drifts, the deployed site silently loses sets -- so fail here
+        # rather than ship a checklist that disagrees with the files beside it.
+        run: |
+          node tools/build-manifest.mjs
+          if ! git diff --quiet -- data/index.json; then
+            echo "::error::data/index.json is stale. Run: node tools/build-manifest.mjs"
+            git --no-pager diff -- data/index.json
+            exit 1
+          fi
+          echo "manifest is in sync"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4

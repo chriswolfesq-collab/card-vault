@@ -25,7 +25,10 @@ export async function buildManifest(quiet = false) {
       // A malformed set file should not take the manifest down with it.
     }
   }
-  const manifest = { generated: new Date().toISOString(), sets };
+  // Deliberately no timestamp: this file is rewritten on every set change, and
+  // a clock in it would mean a git diff each time and a CI drift check that can
+  // never pass. Content only, so identical sets produce an identical file.
+  const manifest = { sets };
   await writeFile(join(ROOT, 'data', 'index.json'), JSON.stringify(manifest, null, 2) + '\n');
   if (!quiet) console.log(`data/index.json -> ${sets.length} sets`);
   return manifest;
