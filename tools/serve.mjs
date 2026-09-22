@@ -98,7 +98,7 @@ async function loadSets() {
   return sets.filter(Boolean);
 }
 
-const EMPTY_COLLECTION = { version: 1, updated: null, holdings: [] };
+const EMPTY_COLLECTION = { version: 2, updated: null, holdings: [], purchases: [], wants: [] };
 
 async function handleAPI(req, res, url) {
   const route = url.pathname.replace(/^\/api\//, '');
@@ -113,8 +113,13 @@ async function handleAPI(req, res, url) {
 
   if (req.method === 'PUT' && route === 'collection') {
     const body = JSON.parse(await readBody(req, 32 * 1024 * 1024));
-    if (!Array.isArray(body.holdings)) return json(res, 400, { error: 'holdings must be an array' });
-    body.version = 1;
+    for (const key of ['holdings', 'purchases', 'wants']) {
+      if (body[key] != null && !Array.isArray(body[key])) {
+        return json(res, 400, { error: `${key} must be an array` });
+      }
+      body[key] = body[key] || [];
+    }
+    body.version = 2;
     body.updated = new Date().toISOString();
     await mkdir(DATA, { recursive: true });
     await writeAtomic(join(DATA, 'collection.json'), JSON.stringify(body, null, 2) + '\n');

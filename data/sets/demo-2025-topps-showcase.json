@@ -1,0 +1,207 @@
+{
+  "id": "demo-2025-topps-showcase",
+  "brand": "Topps",
+  "year": 2025,
+  "name": "Showcase (Demo)",
+  "subsets": [
+    {
+      "id": "base",
+      "name": "Base",
+      "prefix": "",
+      "from": 1,
+      "to": 120
+    }
+  ],
+  "parallels": [
+    {
+      "id": "base",
+      "name": "Base",
+      "print": null
+    },
+    {
+      "id": "gold",
+      "name": "Gold",
+      "print": 2025
+    },
+    {
+      "id": "black",
+      "name": "Black",
+      "print": 71
+    },
+    {
+      "id": "red",
+      "name": "Red",
+      "print": 25
+    },
+    {
+      "id": "platinum",
+      "name": "Platinum",
+      "print": 1
+    }
+  ],
+  "sport": "baseball",
+  "cards": {
+    "1": {
+      "player": "Shohei Ohtani",
+      "team": "LAD"
+    },
+    "2": {
+      "player": "Mookie Betts",
+      "team": "LAD"
+    },
+    "3": {
+      "player": "Freddie Freeman",
+      "team": "LAD"
+    },
+    "4": {
+      "player": "Will Smith",
+      "team": "LAD"
+    },
+    "5": {
+      "player": "Tyler Glasnow",
+      "team": "LAD"
+    },
+    "6": {
+      "player": "Yoshinobu Yamamoto",
+      "team": "LAD"
+    },
+    "7": {
+      "player": "Aaron Judge",
+      "team": "NYY"
+    },
+    "8": {
+      "player": "Juan Soto",
+      "team": "NYM"
+    },
+    "9": {
+      "player": "Gerrit Cole",
+      "team": "NYY"
+    },
+    "10": {
+      "player": "Bobby Witt Jr.",
+      "team": "KC"
+    },
+    "11": {
+      "player": "Gunnar Henderson",
+      "team": "BAL"
+    },
+    "12": {
+      "player": "Adley Rutschman",
+      "team": "BAL"
+    },
+    "13": {
+      "player": "Julio Rodríguez",
+      "team": "SEA"
+    },
+    "14": {
+      "player": "Corbin Carroll",
+      "team": "ARI"
+    },
+    "15": {
+      "player": "Elly De La Cruz",
+      "team": "CIN"
+    },
+    "16": {
+      "player": "Ronald Acuña Jr.",
+      "team": "ATL"
+    },
+    "17": {
+      "player": "Fernando Tatis Jr.",
+      "team": "SD"
+    },
+    "18": {
+      "player": "Paul Skenes",
+      "team": "PIT"
+    },
+    "19": {
+      "player": "Jackson Chourio",
+      "team": "MIL"
+    },
+    "20": {
+      "player": "James Wood",
+      "team": "WSH"
+    },
+    "21": {
+      "player": "Wyatt Langford",
+      "team": "TEX"
+    },
+    "22": {
+      "player": "Jackson Holliday",
+      "team": "BAL"
+    },
+    "23": {
+      "player": "Dylan Crews",
+      "team": "WSH"
+    },
+    "24": {
+      "player": "Roman Anthony",
+      "team": "BOS"
+    },
+    "25": {
+      "player": "Shohei Ohtani",
+      "team": "LAD"
+    },
+    "26": {
+      "player": "Mookie Betts",
+      "team": "LAD"
+    },
+    "27": {
+      "player": "Freddie Freeman",
+      "team": "LAD"
+    },
+    "28": {
+      "player": "Will Smith",
+      "team": "LAD"
+    },
+    "29": {
+      "player": "Tyler Glasnow",
+      "team": "LAD"
+    },
+    "30": {
+      "player": "Yoshinobu Yamamoto",
+      "team": "LAD"
+    },
+    "31": {
+      "player": "Aaron Judge",
+      "team": "NYY"
+    },
+    "32": {
+      "player": "Juan Soto",
+      "team": "NYM"
+    },
+    "33": {
+      "player": "Gerrit Cole",
+      "team": "NYY"
+    },
+    "34": {
+      "player": "Bobby Witt Jr.",
+      "team": "KC"
+    },
+    "35": {
+      "player": "Gunnar Henderson",
+      "team": "BAL"
+    },
+    "36": {
+      "player": "Adley Rutschman",
+      "team": "BAL"
+    },
+    "37": {
+      "player": "Julio Rodríguez",
+      "team": "SEA"
+    },
+    "38": {
+      "player": "Corbin Carroll",
+      "team": "ARI"
+    },
+    "39": {
+      "player": "Elly De La Cruz",
+      "team": "CIN"
+    },
+    "40": {
+      "player": "Ronald Acuña Jr.",
+      "team": "ATL"
+    }
+  },
+  "verified": false,
+  "source": "demo-data.mjs"
+}

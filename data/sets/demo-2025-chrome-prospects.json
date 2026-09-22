@@ -1,0 +1,127 @@
+{
+  "id": "demo-2025-chrome-prospects",
+  "brand": "Bowman",
+  "year": 2025,
+  "name": "Chrome Prospects (Demo)",
+  "subsets": [
+    {
+      "id": "prospects",
+      "name": "Prospects",
+      "prefix": "CP",
+      "from": 1,
+      "to": 60
+    }
+  ],
+  "parallels": [
+    {
+      "id": "base",
+      "name": "Base",
+      "print": null
+    },
+    {
+      "id": "refractor",
+      "name": "Refractor",
+      "print": null
+    },
+    {
+      "id": "orange",
+      "name": "Orange Refractor",
+      "print": 25
+    },
+    {
+      "id": "red",
+      "name": "Red Refractor",
+      "print": 5
+    },
+    {
+      "id": "superfractor",
+      "name": "Superfractor",
+      "print": 1
+    }
+  ],
+  "sport": "baseball",
+  "cards": {
+    "CP1": {
+      "player": "Shohei Ohtani",
+      "team": "LAD"
+    },
+    "CP2": {
+      "player": "Mookie Betts",
+      "team": "LAD"
+    },
+    "CP3": {
+      "player": "Freddie Freeman",
+      "team": "LAD"
+    },
+    "CP4": {
+      "player": "Will Smith",
+      "team": "LAD"
+    },
+    "CP5": {
+      "player": "Tyler Glasnow",
+      "team": "LAD"
+    },
+    "CP6": {
+      "player": "Yoshinobu Yamamoto",
+      "team": "LAD"
+    },
+    "CP7": {
+      "player": "Aaron Judge",
+      "team": "NYY"
+    },
+    "CP8": {
+      "player": "Juan Soto",
+      "team": "NYM"
+    },
+    "CP9": {
+      "player": "Gerrit Cole",
+      "team": "NYY"
+    },
+    "CP10": {
+      "player": "Bobby Witt Jr.",
+      "team": "KC"
+    },
+    "CP11": {
+      "player": "Gunnar Henderson",
+      "team": "BAL"
+    },
+    "CP12": {
+      "player": "Adley Rutschman",
+      "team": "BAL"
+    },
+    "CP13": {
+      "player": "Julio Rodríguez",
+      "team": "SEA"
+    },
+    "CP14": {
+      "player": "Corbin Carroll",
+      "team": "ARI"
+    },
+    "CP15": {
+      "player": "Elly De La Cruz",
+      "team": "CIN"
+    },
+    "CP16": {
+      "player": "Ronald Acuña Jr.",
+      "team": "ATL"
+    },
+    "CP17": {
+      "player": "Fernando Tatis Jr.",
+      "team": "SD"
+    },
+    "CP18": {
+      "player": "Paul Skenes",
+      "team": "PIT"
+    },
+    "CP19": {
+      "player": "Jackson Chourio",
+      "team": "MIL"
+    },
+    "CP20": {
+      "player": "James Wood",
+      "team": "WSH"
+    }
+  },
+  "verified": false,
+  "source": "demo-data.mjs"
+}
